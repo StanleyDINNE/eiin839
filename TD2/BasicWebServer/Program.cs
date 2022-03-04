@@ -76,29 +76,37 @@ namespace BasicServerHTTPlistener
                 Console.WriteLine($"Received request for {request.Url}");
 
                 //get url protocol
+                Console.WriteLine("request.Url.Scheme");
                 Console.WriteLine(request.Url.Scheme);
                 //get user in url
+                Console.WriteLine("request.Url.UserInfo");
                 Console.WriteLine(request.Url.UserInfo);
                 //get host in url
+                Console.WriteLine("request.Url.Host");
                 Console.WriteLine(request.Url.Host);
                 //get port in url
+                Console.WriteLine("request.Url.Port");
                 Console.WriteLine(request.Url.Port);
                 //get path in url 
+                Console.WriteLine("request.Url.LocalPath");
                 Console.WriteLine(request.Url.LocalPath);
 
-                // parse path in url 
+                // parse path in url
+                Console.WriteLine("request.Url.Segments");
                 foreach (string str in request.Url.Segments)
                 {
                     Console.WriteLine(str);
                 }
+                Console.WriteLine("End of request.Url.Segments");
 
                 //get params un url. After ? and between &
 
                 Console.WriteLine(request.Url.Query);
 
                 //parse params in url
-                Console.WriteLine("param1 = " + HttpUtility.ParseQueryString(request.Url.Query).Get("param1"));
-                Console.WriteLine("param2 = " + HttpUtility.ParseQueryString(request.Url.Query).Get("param2"));
+
+                //Console.WriteLine("param2 = " + HttpUtility.ParseQueryString(request.Url.Query).Get("param1"));
+                // Console.WriteLine("param2 = " + HttpUtility.ParseQueryString(request.Url.Query).Get("param2"));
                 Console.WriteLine("param3 = " + HttpUtility.ParseQueryString(request.Url.Query).Get("param3"));
                 Console.WriteLine("param4 = " + HttpUtility.ParseQueryString(request.Url.Query).Get("param4"));
 
@@ -109,7 +117,16 @@ namespace BasicServerHTTPlistener
                 HttpListenerResponse response = context.Response;
 
                 // Construct a response.
-                string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
+                string[] Params = {
+                    HttpUtility.ParseQueryString(request.Url.Query).Get("param1"),
+                    HttpUtility.ParseQueryString(request.Url.Query).Get("param2")
+                };
+
+                string responseString = BasicWebServer.Mymethods.Invoke(
+                    request.Url.Segments[request.Url.Segments.Length - 1],
+                    Params[0],
+                    Params[1]
+                );
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                 // Get a response stream and write the response to it.
                 response.ContentLength64 = buffer.Length;
@@ -120,6 +137,11 @@ namespace BasicServerHTTPlistener
             }
             // Httplistener neither stop ... But Ctrl-C do that ...
             // listener.Stop();
+        }
+
+        int incr(int value)
+        {
+            return value + 1;
         }
     }
 }
